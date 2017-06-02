@@ -5,46 +5,57 @@ const express = require('express');
 const { DATABASE, PORT } = require('./config');
 const app = express();
 
+function constructURL(protocol, host, id){
+  return `${protocol}://${host}/api/items/${id}`;
+}
+
 // Add middleware and .get, .post, .put and .delete endpoints
 app.use('/api/items', bodyParser.json());
+
+//prevents cors issues
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header(
     'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept'
-  );
+    'Origin, X-Requested-With, Content-Type, Accept');
   res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE');
   next();
 });
 
-app.get('/api/items', (req, res) => {
-  knex('items').select('title', 'id').then(results => res.status(200).send(results));
+//gets the items from the database. Inserts a url into the response prior to responding.
+app.get('/api/items', (req, res) => { 
+  knex('items').select('title', 'id').then(results => {
+    results.forEach(item =>{
+      item.url = constructURL(req.protocol, req.get('host'), item.id); //inserts here
+    });
+    res.status(200).send(results);
+  });
 }); 
+
+//sends back a response with the row of the item that matched the query.
 app.get('/api/items/:itemId', (req, res) => {  
-  knex('items').select('id', 'title').where('id', req.params.itemId).then(results => res.status(200).send(results[0]));
+  knex('items').select('*').where('id', req.params.itemId).then(results => res.status(200).send(results[0]));
 });
 
 app.post('/api/items', (req, res) => {
-  const protocol = req.protocol;
-  const host = req.get('host');
+  //first checks if the post request has a title to prevent a not null error.
   if(!req.body.title){
     return res.status(400).send();
-  }else {
-    knex('items').insert(req.body)
-  .returning(['id'])
-  .then(results => {
-    return knex('items').select('id', 'title', 'completed').where('id', results[0].id);
-  })
-  .then(results =>{ 
-    const id = results[0].id;
-    const url = `${protocol}://${host}/api/items/${id}`;
-    res.status(201).location(`${protocol}://${host}/api/items/${id}/`).send({url: url, title: results[0].title, id: results[0].id, completed: results[0].completed});
-  });
   }
+  knex('items')
+  .insert({title: req.body.title})
+  .returning(['id', 'title', 'completed'])
+  .then(results => {
+    const url = constructURL(req.protocol, req.get('host'), results[0].id);  //constructs a new url
+    res.status(201).location(url).send({url: url, title: results[0].title, id: results[0].id, completed: results[0].completed});
+  });
 });
  
 app.put('/api/items/:itemId', (req, res) => {
-  knex('items').where('id', req.params.itemId).update(req.body).then(results => {
+  if(!(req.body.title || req.body.completed)){ //checks if the request has a title or completed key.
+    res.status(400).send();
+  }
+  knex('items').where('id', req.params.itemId).update(req.body).then(() => {
     return knex('items').where('id', req.params.itemId).select(Object.keys(req.body));
   }).then(results => {
     res.status(200).send(results[0]);
@@ -52,8 +63,9 @@ app.put('/api/items/:itemId', (req, res) => {
 });
 
 app.delete('/api/items/:itemId', (req, res)=>{
-  knex('items').where('id', req.params.itemId).del().returning('title').then(results =>{
-    res.status(204).send([]);
+  knex('items').where('id', req.params.itemId).del().returning('title').then((result) =>{
+    //deletes the row that matches the id, the responds with a message that it has done so.
+    res.status(204).send(result);
   });
 });
 
@@ -80,7 +92,7 @@ function closeServer() {
       console.log('Closing servers');
       server.close(err => {
         if (err) {
-          return reject(err);
+          return reject(err); 
         }
         resolve();
       });

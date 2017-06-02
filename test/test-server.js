@@ -288,7 +288,7 @@ describe('TodoMVC API:', () => {
             result.should.have.header('location');
             result.body.should.have.property('url').is.a('string');
             const url = result.get('location');
-           // const split = url.lastIndexOf('/');
+            const split = url.lastIndexOf('/');
             const root = url.slice(0, split);
             const path = url.substr(split);
 
