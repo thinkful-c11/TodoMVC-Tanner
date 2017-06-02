@@ -55,7 +55,7 @@ app.put('/api/items/:itemId', (req, res) => {
   if(!(req.body.title || req.body.completed)){ //checks if the request has a title or completed key.
     res.status(400).send();
   }
-  knex('items').where('id', req.params.itemId).update(req.body).then(() => {
+  knex('items').where('id', req.params.itemId).update({completed: req.body.completed, title: req.body.title}).then(() => {
     return knex('items').where('id', req.params.itemId).select(Object.keys(req.body));
   }).then(results => {
     res.status(200).send(results[0]);
