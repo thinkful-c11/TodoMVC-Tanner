@@ -4,6 +4,6 @@ deploy:
   provider: heroku
   api_key:
     secure: YLyud9WHQCsdtWpkYC6aqNl9vwXyeaIqhVDnCp6BpHPx3BdHIpFe+I7Qd60Iv3SMQsrCxHJBtnaoJXqlgaXg1orLXevUSZqI43KdavTFgUQN225dHqFtf9fcMKD9wRzUKMi3/O1vUIJkOFBUt//3kvAI8rCOHdC1YWJfSE/0zEJIYLwKivxvw51jvjOXHsadjjYmboeUkD8eLCQ7ywUUymR+2tKW9yW5Rr0JjGcBlz8vgSvGmqUKgTD25xKzdbZiF6Mey1N33VN/9SCh78Q7aP3l11crBVV+CpNn4Rkb3N4dUhhDANDB7zCmBpZwl6QdI4U6svWlAJxmvRROzANH/3sRdejza94YiVSdVC/ynANOT+HGgBiSMV7sq/t/wDedNJL2OHhphCSDhwMfZgQbm4GCfW4G6jzXNNP74rLaobTGzOuLK+PP7+CYYAyI04WPH8rrSCOG3uYmPH6Wzg7GdEzidCBhsuuaTFO+EKWWabW+Mb0V+KbdRwYrbJ2Yrf3jGgsndJd9gouTDhcGcVrC8AyWANIuGzZG2hosRqBXD2w7KhvTsqY5sbYJPmMusWOTQuZJ5UUDPwWMRfNjZ5zpBhIZrccAKHCKeFexVt3VLM+NITSvfoIfBqv+iGMPQ/r5RLsEHoDa48iHBi7JAVwGXVHsGwFbPOtxnZVTzCp22uk=
-  app: vast-depths-95649
+  app: todo-app-thinkful
   on:
     repo: thinkful-c11/TodoMVC-Tanner
