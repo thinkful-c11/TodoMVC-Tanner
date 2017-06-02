@@ -138,6 +138,14 @@ describe('TodoMVC API:', () => {
         });
     });
 
+    afterEach(() => {
+      return knex('items')
+        .del()
+        .catch((err) => { 
+          console.error('ERROR', err.message);
+        });
+    });
+
     describe('GET endpoints', function () {
       /**
        * This requires you to wire-up the GET /api/items endpoint to knex and postgres
